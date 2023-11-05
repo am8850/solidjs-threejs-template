@@ -77,6 +77,7 @@ function App() {
       // Rotate the cube
       monkey.scene.rotation.x += 2 * oneDeg
       monkey.scene.rotation.y += oneDeg
+      monkey.scene.rotation.z -= oneDeg
       cube1.rotation.x += -oneDeg
       cube1.rotation.y += -oneDeg
       setRot(new THREE.Vector3(THREE.MathUtils.radToDeg(monkey.scene.rotation.x) % 360,
