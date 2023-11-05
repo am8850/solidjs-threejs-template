@@ -1,5 +1,6 @@
 import { createSignal, onCleanup, onMount } from 'solid-js'
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 
@@ -9,7 +10,7 @@ function App() {
   let canvas: HTMLCanvasElement = null!;
   let parentDiv: HTMLDivElement = null!;
 
-  onMount(() => {
+  onMount(async () => {
     // Reset the canvas size    
     setSize({ width: parentDiv.clientWidth, height: parentDiv.clientHeight })
     canvas.width = size().width
@@ -27,17 +28,21 @@ function App() {
     // create a perspective camera
     const camera = new THREE.PerspectiveCamera(75, size().width / size().height, 0.1, 1000)
     // Put the camera on top of the cube
-    camera.position.set(0, 0, 5)
+    camera.position.set(0, 2, 5)
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
     // Scene
     // TODO: Create a scene a separate file
+    const loader = new GLTFLoader();
     const scene = new THREE.Scene()
 
     const light = new THREE.DirectionalLight(0xffffff, 1)
     light.position.set(0, 0, 100)
     scene.add(light)
+
+    let gridHelper = new THREE.GridHelper(20, 20)
+    scene.add(gridHelper)
 
     // Create a simple green cube
     let basicMaterial = new THREE.MeshPhongMaterial({
@@ -46,8 +51,6 @@ function App() {
       shininess: 0,
 
     })
-    let cube = new THREE.Mesh(new THREE.BoxGeometry(), basicMaterial)
-    scene.add(cube)
 
     let Material = new THREE.MeshBasicMaterial({ wireframe: true, transparent: true })
     let cube1 = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3), Material)
@@ -60,19 +63,25 @@ function App() {
     // const helper = new THREE.CameraHelper(camera);
     // scene.add(helper);
 
+    // Load the monkey Blender monkey
+    // Applied a translucent color material for effect
+    let monkey = await loader.loadAsync('assets/monkey.glb');
+    scene.add(monkey.scene)
+
+
     // Start the game loop
     let frame = requestAnimationFrame(loop);
     const oneDeg = Math.PI / 180
     function loop(frame: number) {
       frame = requestAnimationFrame(loop);
       // Rotate the cube
-      cube.rotation.x += 2 * oneDeg
-      cube.rotation.y += oneDeg
+      monkey.scene.rotation.x += 2 * oneDeg
+      monkey.scene.rotation.y += oneDeg
       cube1.rotation.x += -oneDeg
       cube1.rotation.y += -oneDeg
-      setRot(new THREE.Vector3(THREE.MathUtils.radToDeg(cube.rotation.x) % 360,
-        THREE.MathUtils.radToDeg(cube.rotation.y) % 360,
-        THREE.MathUtils.radToDeg(cube.rotation.z) % 360))
+      setRot(new THREE.Vector3(THREE.MathUtils.radToDeg(monkey.scene.rotation.x) % 360,
+        THREE.MathUtils.radToDeg(monkey.scene.rotation.y) % 360,
+        THREE.MathUtils.radToDeg(monkey.scene.rotation.z) % 360))
       controls.update();
       renderer.render(scene, camera)
     }
