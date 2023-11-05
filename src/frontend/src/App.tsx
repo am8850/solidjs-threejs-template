@@ -45,27 +45,22 @@ function App() {
     scene.add(gridHelper)
 
     // Create a simple green cube
-    let basicMaterial = new THREE.MeshPhongMaterial({
-      color: 0xc000c0,
-      specular: 0x009900,
-      shininess: 0,
+    let frameMaterial = new THREE.MeshBasicMaterial({ wireframe: true, transparent: true })
+    let frameCube = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3), frameMaterial)
+    scene.add(frameCube)
 
-    })
-
-    let Material = new THREE.MeshBasicMaterial({ wireframe: true, transparent: true })
-    let cube1 = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3), Material)
-
-    scene.add(cube1)
-
+    // Add the axes helper
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
 
-    // const helper = new THREE.CameraHelper(camera);
-    // scene.add(helper);
+    // Maybe add the camera helper
+    //const helper = new THREE.CameraHelper(camera);
+    //scene.add(helper);
 
     // Load the monkey Blender monkey
     // Applied a translucent color material for effect
     let monkey = await loader.loadAsync('assets/monkey.glb');
+    monkey.scene.castShadow = true
     scene.add(monkey.scene)
 
 
@@ -78,8 +73,8 @@ function App() {
       monkey.scene.rotation.x += 2 * oneDeg
       monkey.scene.rotation.y += oneDeg
       monkey.scene.rotation.z -= oneDeg
-      cube1.rotation.x += -oneDeg
-      cube1.rotation.y += -oneDeg
+      frameCube.rotation.x += -oneDeg
+      frameCube.rotation.y += -oneDeg
       setRot(new THREE.Vector3(THREE.MathUtils.radToDeg(monkey.scene.rotation.x) % 360,
         THREE.MathUtils.radToDeg(monkey.scene.rotation.y) % 360,
         THREE.MathUtils.radToDeg(monkey.scene.rotation.z) % 360))
