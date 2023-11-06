@@ -50,7 +50,7 @@ function App() {
     scene.add(frameCube)
 
     // Add the axes helper
-    const axesHelper = new THREE.AxesHelper(5);
+    const axesHelper = new THREE.AxesHelper(3);
     scene.add(axesHelper);
 
     // Maybe add the camera helper
@@ -59,10 +59,18 @@ function App() {
 
     // Load the monkey Blender monkey
     // Applied a translucent color material for effect
-    let monkey = await loader.loadAsync('assets/monkey.glb');
+    const monkey = await loader.loadAsync('assets/monkey.glb');
     monkey.scene.castShadow = true
     scene.add(monkey.scene)
 
+    const tree = await loader.loadAsync('assets/tree.glb');
+    for (let i = 0; i < 10; i++) {
+      const clone = tree.scene.clone()
+      clone.scale.set(1, THREE.MathUtils.randFloat(1.0, 2.0), 1)
+      clone.rotateY(THREE.MathUtils.randFloat(0, 2 * Math.PI))
+      clone.position.set(THREE.MathUtils.randInt(-8, 8), 0, THREE.MathUtils.randInt(-8, 8))
+      scene.add(clone)
+    }
 
     // Start the game loop
     let frame = requestAnimationFrame(loop);
